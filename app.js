@@ -428,7 +428,7 @@
       '      <a href="index.html" class="nav-link ' + (activePage === "katalog" ? "active" : "") + '">Katalog</a>' +
       '      <a href="cart.html" class="nav-link ' + (activePage === "cart" ? "active" : "") + '">Keranjang <span class="cart-badge" id="nav-cart-count">' + count + "</span></a>" +
       '      <a href="history.html" class="nav-link ' + (activePage === "history" ? "active" : "") + '">Riwayat Transaksi</a>' +
-      '      <a href="qris-approve.html" target="_blank" rel="noopener" class="nav-link sim-link" title="Buka Simulator Approval QRIS di tab baru">Simulator QRIS &#8599;</a>' +
+      '      
       "    </nav>" +
       "  </div>" +
       "</header>";
