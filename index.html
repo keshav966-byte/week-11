@@ -4,323 +4,176 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Katalog — Toko Custom Keycaps</title>
-  <style>
-    :root {
-      --bg: #f4f3ef;
-      --surface: #ffffff;
-      --text: #1c1c1e;
-      --muted: #6e6e73;
-      --border: #e2e0d8;
-      --accent: #d95d39;
-      --tag-bg: #efede6;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    header {
-      background-color: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 24px 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .header-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background-color: var(--text);
-      color: var(--surface);
-      border-radius: 6px;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 14px;
-      box-shadow: 0 3px 0 #00000040;
-    }
-
-    .brand-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .brand-sub {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .catalog-badge {
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 6px 12px;
-      background-color: var(--tag-bg);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-    }
-
-    .intro {
-      padding: 40px 20px 24px;
-    }
-
-    .intro h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 8px;
-    }
-
-    .intro p {
-      color: var(--muted);
-      max-width: 640px;
-      font-size: 1rem;
-    }
-
-    .catalog-section {
-      padding: 16px 20px 64px;
-    }
-
-    .catalog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 24px;
-    }
-
-    .card {
-      background-color: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card-visual {
-      height: 220px;
-      background-color: #faf9f6;
-      border-bottom: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    .card-visual img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .card-body {
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .card-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .profile-tag {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      background-color: var(--tag-bg);
-      color: var(--text);
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .stock-status {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: #2e7d32;
-    }
-
-    .stock-status.limited {
-      color: var(--accent);
-    }
-
-    .card-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .card-desc {
-      font-size: 0.875rem;
-      color: var(--muted);
-      margin-bottom: 16px;
-      flex-grow: 1;
-    }
-
-    .card-footer {
-      padding-top: 12px;
-      border-top: 1px dashed var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-    }
-
-    .price {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .sku {
-      font-size: 0.75rem;
-      color: var(--muted);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    }
-
-    footer {
-      background-color: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 28px 20px;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <header>
-    <div class="container header-inner">
-      <div class="brand">
-        <div class="brand-icon">ESC</div>
-        <div>
-          <div class="brand-title">Toko Custom Keycaps</div>
-          <div class="brand-sub">Koleksi Keycaps Mekanikal &amp; Artisan</div>
-        </div>
-      </div>
-      <div class="catalog-badge">30 Produk Katalog</div>
-    </div>
-  </header>
+  <div id="site-topbar"></div>
 
   <main>
     <section class="intro">
       <div class="container">
-        <h1>Katalog Keycaps</h1>
-        <p>Daftar lengkap koleksi custom keycaps dan artisan resin untuk keyboard mekanikal MX-stem. Tampilan etalase statis.</p>
+        <div class="intro-top">
+          <div>
+            <h1>Katalog Keycaps</h1>
+            <p>Daftar lengkap koleksi custom keycaps dan artisan resin untuk keyboard mekanikal MX-stem.</p>
+          </div>
+          <div class="catalog-badge" id="catalog-count">30 Produk Katalog</div>
+        </div>
+
+        <div class="filter-bar">
+          <input type="search" id="search-input" class="form-control filter-search" placeholder="Cari nama keycap atau SKU (mis. KC-003, Artisan)..." />
+          <select id="profile-filter" class="form-control filter-select" aria-label="Filter Profil & Material">
+            <option value="ALL">Semua Profil / Material</option>
+            <option value="Cherry • PBT">Cherry • PBT</option>
+            <option value="Cherry • Resin">Cherry • Resin</option>
+            <option value="Artisan • Resin">Artisan • Resin</option>
+            <option value="OEM • PBT">OEM • PBT</option>
+            <option value="OEM • Resin">OEM • Resin</option>
+            <option value="SA • ABS">SA • ABS</option>
+            <option value="SA • PBT">SA • PBT</option>
+            <option value="SA • Resin">SA • Resin</option>
+            <option value="XDA • PBT">XDA • PBT</option>
+          </select>
+          <select id="sort-select" class="form-control filter-select" aria-label="Urutkan Harga">
+            <option value="default">Urutan Default (SKU)</option>
+            <option value="price-asc">Harga: Terendah ke Tertinggi</option>
+            <option value="price-desc">Harga: Tertinggi ke Terendah</option>
+          </select>
+        </div>
       </div>
     </section>
 
     <section class="catalog-section">
       <div class="container">
-        <div id="catalog-grid" class="catalog-grid">
-          <!-- Item katalog dirender oleh JavaScript standar -->
-        </div>
+        <div id="catalog-grid" class="catalog-grid"></div>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="container footer-inner">
-      <div>&copy; <span id="year"></span> Toko Custom Keycaps. Seluruh hak cipta dilindungi.</div>
-      <div>Lokasi: Bandung, Indonesia &bull; Jam Operasional: 09.00 – 17.00 WIB</div>
-    </div>
-  </footer>
+  <div id="site-footer"></div>
 
+  <script src="app.js"></script>
   <script>
-    const folder = "Keycaps/";
+    (function () {
+      const store = window.TCKStore;
+      store.renderTopbar("katalog");
+      store.renderFooter();
 
-    const products = [
-      { sku: "KC-001", img: "1.jpg", name: "Custom Keycap Edition #01", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 310.000", desc: "Keycap custom presisi dengan kompatibilitas stem MX standar." },
-      { sku: "KC-002", img: "2.jpg", name: "Custom Keycap Edition #02", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 320.000", desc: "Desain eksklusif untuk tombol Esc atau baris fungsi keyboard." },
-      { sku: "KC-003", img: "3.jpg", name: "Custom Keycap Edition #03", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 340.000", desc: "Cetakan resin berkualitas dengan finishing halus dan tahan lama." },
-      { sku: "KC-004", img: "4.jpg", name: "Custom Keycap Edition #04", profile: "OEM • PBT", stock: "Tersedia", limited: false, price: "Rp 315.000", desc: "Aksen visual unik untuk mempercantik layout keyboard mekanikal." },
-      { sku: "KC-005", img: "5.jpg", name: "Custom Keycap Edition #05", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 350.000", desc: "Edisi handcrafted dengan detail warna berlapis yang tajam." },
-      { sku: "KC-006", img: "6.jpg", name: "Custom Keycap Edition #06", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 325.000", desc: "Cocok dipadukan dengan keyboard custom ukuran 60% hingga Full-size." },
-      { sku: "KC-007", img: "7.jpg", name: "Custom Keycap Edition #07", profile: "SA • ABS", stock: "Tersedia", limited: false, price: "Rp 330.000", desc: "Material solid dengan penyebaran cahaya RGB yang merata." },
-      { sku: "KC-008", img: "8.jpg", name: "Custom Keycap Edition #08", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 345.000", desc: "Finishing mengilap dan presisi tinggi pada dudukan switch MX." },
-      { sku: "KC-009", img: "9.jpg", name: "Custom Keycap Edition #09", profile: "XDA • PBT", stock: "Tersedia", limited: false, price: "Rp 310.000", desc: "Desain artistik ringkas untuk tombol aksen keyboard mekanikal." },
-      { sku: "KC-010", img: "10.jpg", name: "Custom Keycap Edition #10", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 335.000", desc: "Tekstur permukaan nyaman untuk mengetik cepat sehari-hari." },
-      { sku: "KC-011", img: "11.jpg", name: "Custom Keycap Edition #11", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 360.000", desc: "Koleksi pilihan dengan komposisi warna kontras yang elegan." },
-      { sku: "KC-012", img: "12.jpg", name: "Custom Keycap Edition #12", profile: "OEM • PBT", stock: "Tersedia", limited: false, price: "Rp 295.000", desc: "Nuansa warna modern untuk setup meja kerja maupun gaming." },
-      { sku: "KC-013", img: "13.jpg", name: "Custom Keycap Edition #13", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 395.000", desc: "Detail mikro yang rapi terbungkus dalam resin bening." },
-      { sku: "KC-014", img: "14.jpg", name: "Custom Keycap Edition #14", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 340.000", desc: "Ketebalan dinding 1.5mm dengan suara ketikan yang solid." },
-      { sku: "KC-015", img: "15.jpg", name: "Custom Keycap Edition #15", profile: "SA • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 410.000", desc: "Profil tinggi klasik dengan karakter visual yang mencolok." },
-      { sku: "KC-016", img: "16.jpg", name: "Custom Keycap Edition #16", profile: "OEM • Resin", stock: "Tersedia", limited: false, price: "Rp 365.000", desc: "Desain tematik unik untuk melengkapi koleksi keyboard custom." },
-      { sku: "KC-017", img: "17.jpg", name: "Custom Keycap Edition #17", profile: "Cherry • Resin", stock: "Tersedia", limited: false, price: "Rp 350.000", desc: "Efek visual menarik saat terkena cahaya lampu LED keyboard." },
-      { sku: "KC-018", img: "18.jpg", name: "Custom Keycap Edition #18", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 380.000", desc: "Dibuat secara teliti dengan lapisan pelindung anti-gores." },
-      { sku: "KC-019", img: "19.jpg", name: "Custom Keycap Edition #19", profile: "SA • PBT", stock: "Tersedia", limited: false, price: "Rp 355.000", desc: "Kombinasi warna seimbang dengan legenda huruf yang tegas." },
-      { sku: "KC-020", img: "20.jpg", name: "Custom Keycap Edition #20", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 370.000", desc: "Desain berkarakter kuat untuk menjadi pusat perhatian keyboard." },
-      { sku: "KC-021", img: "21.jpg", name: "Custom Keycap Edition #21", profile: "OEM • PBT", stock: "Tersedia", limited: false, price: "Rp 330.000", desc: "Permukaan matte anti-minyak yang awet untuk penggunaan jangka panjang." },
-      { sku: "KC-022", img: "22.jpg", name: "Custom Keycap Edition #22", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 390.000", desc: "Edisi kolektor dengan detail pahatan yang sangat presisi." },
-      { sku: "KC-023", img: "23.jpg", name: "Custom Keycap Edition #23", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 295.000", desc: "Pilihan tepat untuk menyegarkan tampilan keyboard mekanikal Anda." },
-      { sku: "KC-024", img: "24.jpg", name: "Custom Keycap Edition #24", profile: "OEM • Resin", stock: "Tersedia", limited: false, price: "Rp 345.000", desc: "Tampilan hangat dan estetik yang cocok untuk berbagai tema desk setup." },
-      { sku: "KC-025", img: "25.jpg", name: "Custom Keycap Edition #25", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 285.000", desc: "Inspirasi desain retro dengan sentuhan warna modern." },
-      { sku: "KC-026", img: "26.jpg", name: "Custom Keycap Edition #26", profile: "Artisan • Resin", stock: "Tersedia", limited: false, price: "Rp 310.000", desc: "Ornamen mini di dalam resin jernih dengan tingkat transparansi tinggi." },
-      { sku: "KC-027", img: "27.jpg", name: "Custom Keycap Edition #27", profile: "Artisan • Resin", stock: "Stok Terbatas", limited: true, price: "Rp 360.000", desc: "Memantulkan kilau cahaya dengan indah pada switch RGB." },
-      { sku: "KC-028", img: "28.jpg", name: "Custom Keycap Edition #28", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 490.000", desc: "Kualitas cetak Dye-Sub yang tidak mudah pudar meski sering digunakan." },
-      { sku: "KC-029", img: "29.jpg", name: "Custom Keycap Edition #29", profile: "Cherry • PBT", stock: "Tersedia", limited: false, price: "Rp 510.000", desc: "Desain bersih dan ergonomis untuk kenyamanan mengetik maksimal." },
-      { sku: "KC-030", img: "30.jpg", name: "Custom Keycap Edition #30", profile: "OEM • PBT", stock: "Tersedia", limited: false, price: "Rp 475.000", desc: "Penutup seri katalog dengan perpaduan warna yang elegan dan serbaguna." }
-    ];
+      const grid = document.getElementById("catalog-grid");
+      const countBadge = document.getElementById("catalog-count");
+      const searchInput = document.getElementById("search-input");
+      const profileFilter = document.getElementById("profile-filter");
+      const sortSelect = document.getElementById("sort-select");
 
-    const grid = document.getElementById("catalog-grid");
-    grid.innerHTML = products.map((item) => `
-      <article class="card">
-        <div class="card-visual">
-          <img src="${folder}${item.img}" alt="${item.name}" loading="lazy" />
-        </div>
-        <div class="card-body">
-          <div class="card-meta">
-            <span class="profile-tag">${item.profile}</span>
-            <span class="stock-status ${item.limited ? "limited" : ""}">${item.stock}</span>
-          </div>
-          <h2 class="card-title">${item.name}</h2>
-          <p class="card-desc">${item.desc}</p>
-          <div class="card-footer">
-            <span class="price">${item.price}</span>
-            <span class="sku">${item.sku}</span>
-          </div>
-        </div>
-      </article>
-    `).join("");
+      function getQtyInCart(sku) {
+        const found = store.getCart().find(function (c) {
+          return c.sku === sku;
+        });
+        return found ? found.qty : 0;
+      }
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+      function renderCatalog() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const selectedProfile = profileFilter.value;
+        const sortBy = sortSelect.value;
+
+        let filtered = store.products.filter(function (item) {
+          const matchKeyword =
+            !keyword ||
+            item.name.toLowerCase().includes(keyword) ||
+            item.sku.toLowerCase().includes(keyword) ||
+            item.desc.toLowerCase().includes(keyword) ||
+            item.profile.toLowerCase().includes(keyword);
+          const matchProfile = selectedProfile === "ALL" || item.profile === selectedProfile;
+          return matchKeyword && matchProfile;
+        });
+
+        if (sortBy === "price-asc") {
+          filtered = filtered.slice().sort(function (a, b) {
+            return a.priceNum - b.priceNum;
+          });
+        } else if (sortBy === "price-desc") {
+          filtered = filtered.slice().sort(function (a, b) {
+            return b.priceNum - a.priceNum;
+          });
+        }
+
+        countBadge.textContent = filtered.length + " Produk Ditampilkan";
+
+        if (filtered.length === 0) {
+          grid.innerHTML =
+            '<div class="panel empty-state" style="grid-column: 1 / -1;">' +
+            "  <h3>Keycap tidak ditemukan</h3>" +
+            "  <p>Coba ubah kata kunci pencarian atau reset filter profil keycap.</p>" +
+            '  <button type="button" class="btn btn-outline" id="btn-reset-filter">Reset Filter</button>' +
+            "</div>";
+          return;
+        }
+
+        grid.innerHTML = filtered.map(function (item) {
+          const inCart = getQtyInCart(item.sku);
+          const btnText = inCart > 0
+            ? "+ Tambah Lagi (" + inCart + " di keranjang)"
+            : "+ Tambah ke Keranjang";
+
+          return (
+            '<article class="card">' +
+            '  <div class="card-visual">' +
+            '    <img src="' + store.escapeHtml(item.img) + '" alt="' + store.escapeHtml(item.name) + '" loading="lazy" />' +
+            "  </div>" +
+            '  <div class="card-body">' +
+            '    <div class="card-meta">' +
+            '      <span class="profile-tag">' + store.escapeHtml(item.profile) + "</span>" +
+            '      <span class="stock-status ' + (item.limited ? "limited" : "") + '">' + store.escapeHtml(item.stock) + "</span>" +
+            "    </div>" +
+            '    <h2 class="card-title">' + store.escapeHtml(item.name) + "</h2>" +
+            '    <p class="card-desc">' + store.escapeHtml(item.desc) + "</p>" +
+            '    <div class="card-footer">' +
+            '      <span class="price">' + store.escapeHtml(item.price) + "</span>" +
+            '      <span class="sku">' + store.escapeHtml(item.sku) + "</span>" +
+            "    </div>" +
+            '    <button type="button" class="btn btn-primary btn-block btn-add-cart" data-sku="' + store.escapeHtml(item.sku) + '">' +
+            "      " + btnText +
+            "    </button>" +
+            "  </div>" +
+            "</article>"
+          );
+        }).join("");
+      }
+
+      grid.addEventListener("click", function (e) {
+        if (e.target.id === "btn-reset-filter") {
+          searchInput.value = "";
+          profileFilter.value = "ALL";
+          sortSelect.value = "default";
+          renderCatalog();
+          return;
+        }
+
+        const btn = e.target.closest(".btn-add-cart");
+        if (!btn) return;
+        const sku = btn.getAttribute("data-sku");
+        const item = store.products.find(function (p) {
+          return p.sku === sku;
+        });
+        if (!item) return;
+
+        store.addToCart(sku, 1);
+        store.showToast(item.name + " (" + item.sku + ") ditambahkan ke keranjang");
+        renderCatalog();
+      });
+
+      searchInput.addEventListener("input", renderCatalog);
+      profileFilter.addEventListener("change", renderCatalog);
+      sortSelect.addEventListener("change", renderCatalog);
+
+      store.onRealtimeUpdate(function () {
+        renderCatalog();
+      });
+
+      renderCatalog();
+    })();
   </script>
 </body>
 </html>
