@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keranjang Belanja — Toko Custom Keycaps</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="site-topbar"></div>
+
+  <main>
+    <section class="intro compact">
+      <div class="container">
+        <span class="step-tag">Langkah 1 dari 3</span>
+        <h1>Keranjang Belanja</h1>
+        <p>Atur jumlah pesanan atau hapus item sebelum melanjutkan ke halaman checkout.</p>
+      </div>
+    </section>
+
+    <section class="page-section">
+      <div class="container" id="cart-root"></div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      const store = window.TCKStore;
+      store.renderTopbar("cart");
+      store.renderFooter();
+
+      const root = document.getElementById("cart-root");
+
+      function renderCart() {
+        const cart = store.getCart();
+
+        if (cart.length === 0) {
+          root.innerHTML =
+            '<div class="panel empty-state">' +
+            "  <h3>Keranjang belanja masih kosong</h3>" +
+            "  <p>Silakan pilih koleksi keycaps mekanikal atau artisan resin terlebih dahulu di katalog.</p>" +
+            '  <a href="index.html" class="btn btn-primary">Kembali ke Katalog</a>' +
+            "</div>";
+          return;
+        }
+
+        const totals = store.getCartTotals(18000);
+        const totalQty = store.getCartCount();
+
+        const itemsHtml = cart.map(function (item) {
+          const itemSubtotal = item.priceNum * item.qty;
+          return (
+            '<div class="cart-item" data-sku="' + store.escapeHtml(item.sku) + '">' +
+            '  <img class="cart-thumb" src="' + store.escapeHtml(item.img) + '" alt="' + store.escapeHtml(item.name) + '" />' +
+            '  <div class="cart-item-info">' +
+            "    <h3>" + store.escapeHtml(item.name) + "</h3>" +
+            '    <div class="cart-item-meta">SKU: ' + store.escapeHtml(item.sku) + " &bull; " + store.escapeHtml(item.profile) + "</div>" +
+            '    <div class="cart-item-unit-price">' + store.formatRupiah(item.priceNum) + " / pcs</div>" +
+            "  </div>" +
+            '  <div class="cart-item-actions">' +
+            '    <div class="qty-control">' +
+            '      <button type="button" class="qty-btn btn-dec" data-sku="' + store.escapeHtml(item.sku) + '" aria-label="Kurangi jumlah">&minus;</button>' +
+            '      <input type="number" class="qty-input" min="1" max="99" value="' + item.qty + '" data-sku="' + store.escapeHtml(item.sku) + '" aria-label="Jumlah" />' +
+            '      <button type="button" class="qty-btn btn-inc" data-sku="' + store.escapeHtml(item.sku) + '" aria-label="Tambah jumlah">+</button>' +
+            "    </div>" +
+            '    <div class="cart-item-subtotal">' + store.formatRupiah(itemSubtotal) + "</div>" +
+            '    <button type="button" class="btn btn-danger-outline btn-sm btn-remove" data-sku="' + store.escapeHtml(item.sku) + '">Hapus</button>' +
+            "  </div>" +
+            "</div>"
+          );
+        }).join("");
+
+        root.innerHTML =
+          '<div class="two-col">' +
+          '  <section class="panel">' +
+          '    <div class="panel-title">' +
+          "      <span>Daftar Item (" + totalQty + " pcs)</span>" +
+          '      <button type="button" class="btn btn-danger-outline btn-sm" id="btn-clear-cart">Kosongkan Keranjang</button>' +
+          "    </div>" +
+          "    <div>" + itemsHtml + "</div>" +
+          "  </section>" +
+          '  <aside class="panel">' +
+          '    <div class="panel-title"><span>Ringkasan Belanja</span></div>' +
+          '    <div class="summary-row">' +
+          "      <span>Subtotal (" + totalQty + " item)</span>" +
+          "      <strong>" + store.formatRupiah(totals.subtotal) + "</strong>" +
+          "    </div>" +
+          '    <div class="summary-row">' +
+          "      <span>Estimasi Ongkos Kirim</span>" +
+          "      <strong>" + store.formatRupiah(totals.ongkir) + "</strong>" +
+          "    </div>" +
+          '    <div style="font-size:0.76rem; color:var(--muted); margin-bottom:10px;">Opsi kurir atau ambil di workshop Bandung dapat dipilih saat checkout.</div>' +
+          '    <hr class="summary-divider" />' +
+          '    <div class="summary-total">' +
+          "      <span>Grand Total</span>" +
+          "      <span>" + store.formatRupiah(totals.grandTotal) + "</span>" +
+          "    </div>" +
+          '    <a href="checkout.html" class="btn btn-primary btn-block">Lanjut ke Checkout &rarr;</a>' +
+          '    <a href="index.html" class="btn btn-outline btn-block" style="margin-top:10px;">+ Tambah Keycaps Lainnya</a>' +
+          "  </aside>" +
+          "</div>";
+      }
+
+      root.addEventListener("click", function (e) {
+        const decBtn = e.target.closest(".btn-dec");
+        if (decBtn) {
+          const sku = decBtn.getAttribute("data-sku");
+          const item = store.getCart().find(function (c) { return c.sku === sku; });
+          if (item) {
+            if (item.qty <= 1) {
+              store.removeFromCart(sku);
+              store.showToast(item.name + " dihapus dari keranjang");
+            } else {
+              store.updateCartQty(sku, item.qty - 1);
+            }
+            renderCart();
+          }
+          return;
+        }
+
+        const incBtn = e.target.closest(".btn-inc");
+        if (incBtn) {
+          const sku = incBtn.getAttribute("data-sku");
+          const item = store.getCart().find(function (c) { return c.sku === sku; });
+          if (item) {
+            store.updateCartQty(sku, item.qty + 1);
+            renderCart();
+          }
+          return;
+        }
+
+        const removeBtn = e.target.closest(".btn-remove");
+        if (removeBtn) {
+          const sku = removeBtn.getAttribute("data-sku");
+          const item = store.getCart().find(function (c) { return c.sku === sku; });
+          store.removeFromCart(sku);
+          if (item) store.showToast(item.name + " dihapus dari keranjang");
+          renderCart();
+          return;
+        }
+
+        if (e.target.id === "btn-clear-cart") {
+          store.clearCart();
+          store.showToast("Keranjang dikosongkan");
+          renderCart();
+        }
+      });
+
+      root.addEventListener("change", function (e) {
+        const input = e.target.closest(".qty-input");
+        if (!input) return;
+        const sku = input.getAttribute("data-sku");
+        const val = parseInt(input.value, 10);
+        if (isNaN(val) || val < 1) {
+          store.updateCartQty(sku, 1);
+        } else {
+          store.updateCartQty(sku, val);
+        }
+        renderCart();
+      });
+
+      store.onRealtimeUpdate(function () {
+        renderCart();
+      });
+
+      renderCart();
+    })();
+  </script>
+</body>
+</html>
