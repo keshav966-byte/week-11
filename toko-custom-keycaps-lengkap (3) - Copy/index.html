@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katalog — Toko Custom Keycaps</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="site-topbar"></div>
+
+  <main>
+    <section class="intro">
+      <div class="container">
+        <div class="spotlight" id="spotlight" hidden>
+          <div class="spotlight-head">
+            <div>
+              <h2 class="spotlight-title">Sorotan Diskon</h2>
+              <p class="spotlight-sub">Keycaps pilihan dengan harga spesial. Geser sendiri atau biarkan berjalan otomatis.</p>
+            </div>
+            <div class="spotlight-controls">
+              <button type="button" class="btn btn-outline" id="spot-prev" aria-label="Geser ke kiri">&#10094;</button>
+              <button type="button" class="btn btn-outline" id="spot-next" aria-label="Geser ke kanan">&#10095;</button>
+            </div>
+          </div>
+          <div class="spotlight-track" id="spotlight-track" tabindex="0" role="region" aria-label="Daftar produk diskon"></div>
+        </div>
+
+        <div class="filter-bar">
+          <input type="search" id="search-input" class="form-control filter-search" placeholder="Cari nama keycap atau SKU (mis. KC-003, Artisan)..." />
+          <select id="profile-filter" class="form-control filter-select" aria-label="Filter Profil & Material">
+            <option value="ALL">Semua Profil / Material</option>
+            <option value="Cherry • PBT">Cherry • PBT</option>
+            <option value="Cherry • Resin">Cherry • Resin</option>
+            <option value="Artisan • Resin">Artisan • Resin</option>
+            <option value="OEM • PBT">OEM • PBT</option>
+            <option value="OEM • Resin">OEM • Resin</option>
+            <option value="SA • ABS">SA • ABS</option>
+            <option value="SA • PBT">SA • PBT</option>
+            <option value="SA • Resin">SA • Resin</option>
+            <option value="XDA • PBT">XDA • PBT</option>
+          </select>
+          <select id="sort-select" class="form-control filter-select" aria-label="Urutkan Harga">
+            <option value="default">Urutan Default (SKU)</option>
+            <option value="price-asc">Harga: Terendah ke Tertinggi</option>
+            <option value="price-desc">Harga: Tertinggi ke Terendah</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="catalog-section">
+      <div class="container">
+        <div id="catalog-grid" class="catalog-grid"></div>
+        <nav id="pagination" class="pagination" aria-label="Navigasi halaman katalog"></nav>
+        <p id="pagination-info" class="pagination-info"></p>
+      </div>
+    </section>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="app.js"></script>
+  <script>
+    (function () {
+      const store = window.TCKStore;
+      store.renderTopbar("katalog");
+      store.renderFooter();
+
+      const grid = document.getElementById("catalog-grid");
+      const countBadge = document.getElementById("catalog-count"); // opsional (sudah tidak dipakai di HTML)
+      const searchInput = document.getElementById("search-input");
+      const profileFilter = document.getElementById("profile-filter");
+      const sortSelect = document.getElementById("sort-select");
+      const pagination = document.getElementById("pagination");
+      const paginationInfo = document.getElementById("pagination-info");
+
+      const PAGE_SIZE = 12;
+      let currentPage = 1;
+
+      function getQtyInCart(sku) {
+        const found = store.getCart().find(function (c) {
+          return c.sku === sku;
+        });
+        return found ? found.qty : 0;
+      }
+
+      function renderCatalog() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const selectedProfile = profileFilter.value;
+        const sortBy = sortSelect.value;
+
+        let filtered = store.products.filter(function (item) {
+          const matchKeyword =
+            !keyword ||
+            item.name.toLowerCase().includes(keyword) ||
+            item.sku.toLowerCase().includes(keyword) ||
+            item.desc.toLowerCase().includes(keyword) ||
+            item.profile.toLowerCase().includes(keyword);
+          const matchProfile = selectedProfile === "ALL" || item.profile === selectedProfile;
+          return matchKeyword && matchProfile;
+        });
+
+        if (sortBy === "price-asc") {
+          filtered = filtered.slice().sort(function (a, b) {
+            return a.priceNum - b.priceNum;
+          });
+        } else if (sortBy === "price-desc") {
+          filtered = filtered.slice().sort(function (a, b) {
+            return b.priceNum - a.priceNum;
+          });
+        }
+
+        if (countBadge) countBadge.textContent = filtered.length + " Produk Ditampilkan";
+
+        const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+        const startIdx = (currentPage - 1) * PAGE_SIZE;
+        const pageItems = filtered.slice(startIdx, startIdx + PAGE_SIZE);
+
+        if (filtered.length === 0) {
+          pagination.innerHTML = "";
+          paginationInfo.textContent = "";
+          grid.innerHTML =
+            '<div class="panel empty-state" style="grid-column: 1 / -1;">' +
+            "  <h3>Keycap tidak ditemukan</h3>" +
+            "  <p>Coba ubah kata kunci pencarian atau reset filter profil keycap.</p>" +
+            '  <button type="button" class="btn btn-outline" id="btn-reset-filter">Reset Filter</button>' +
+            "</div>";
+          return;
+        }
+
+        grid.innerHTML = pageItems.map(function (item) {
+          const inCart = getQtyInCart(item.sku);
+          const btnText = inCart > 0
+            ? "+ Tambah Lagi (" + inCart + " di keranjang)"
+            : "+ Tambah ke Keranjang";
+
+          return (
+            '<article class="card">' +
+            '  <div class="card-visual">' +
+            '    <img src="' + store.escapeHtml(item.img) + '" alt="' + store.escapeHtml(item.name) + '" loading="lazy" />' +
+            (item.discountPercent > 0 ? '    <span class="discount-badge">-' + item.discountPercent + "%</span>" : "") +
+            "  </div>" +
+            '  <div class="card-body">' +
+            '    <div class="card-meta">' +
+            '      <span class="profile-tag">' + store.escapeHtml(item.profile) + "</span>" +
+            '      <span class="stock-status ' + (item.limited ? "limited" : "") + '">' + store.escapeHtml(item.stock) + "</span>" +
+            "    </div>" +
+            '    <h2 class="card-title">' + store.escapeHtml(item.name) + "</h2>" +
+            '    <p class="card-desc">' + store.escapeHtml(item.desc) + "</p>" +
+            '    <div class="card-footer">' +
+            '      <span class="price-wrap"><span class="price">' + store.escapeHtml(item.price) + "</span>" +
+            (item.discountPercent > 0 ? '<s class="price-old">' + store.escapeHtml(item.originalPrice) + "</s>" : "") + "</span>" +
+            '      <span class="sku">' + store.escapeHtml(item.sku) + "</span>" +
+            "    </div>" +
+            '    <button type="button" class="btn btn-primary btn-block btn-add-cart" data-sku="' + store.escapeHtml(item.sku) + '">' +
+            "      " + btnText +
+            "    </button>" +
+            "  </div>" +
+            "</article>"
+          );
+        }).join("");
+
+        renderPagination(totalPages, startIdx, pageItems.length, filtered.length);
+      }
+
+      function renderPagination(totalPages, startIdx, shown, total) {
+        paginationInfo.textContent =
+          "Menampilkan " + (startIdx + 1) + "–" + (startIdx + shown) + " dari " + total + " produk";
+
+        if (totalPages <= 1) {
+          pagination.innerHTML = "";
+          return;
+        }
+
+        const pages = [];
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+            pages.push(i);
+          } else if (pages[pages.length - 1] !== "...") {
+            pages.push("...");
+          }
+        }
+
+        let html =
+          '<button type="button" class="btn btn-outline" data-page="' + (currentPage - 1) + '"' +
+          (currentPage === 1 ? " disabled" : "") + ' aria-label="Halaman sebelumnya">&laquo; Prev</button>';
+
+        pages.forEach(function (p) {
+          if (p === "...") {
+            html += '<span class="page-dots">…</span>';
+          } else {
+            html +=
+              '<button type="button" class="btn ' + (p === currentPage ? "btn-primary" : "btn-outline") + '"' +
+              ' data-page="' + p + '"' + (p === currentPage ? ' aria-current="page"' : "") + ">" + p + "</button>";
+          }
+        });
+
+        html +=
+          '<button type="button" class="btn btn-outline" data-page="' + (currentPage + 1) + '"' +
+          (currentPage === totalPages ? " disabled" : "") + ' aria-label="Halaman berikutnya">Next &raquo;</button>';
+
+        pagination.innerHTML = html;
+      }
+
+      pagination.addEventListener("click", function (e) {
+        const btn = e.target.closest("button[data-page]");
+        if (!btn || btn.disabled) return;
+        currentPage = parseInt(btn.getAttribute("data-page"), 10);
+        renderCatalog();
+        const top = document.querySelector(".catalog-section");
+        if (top) top.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      grid.addEventListener("click", function (e) {
+        if (e.target.id === "btn-reset-filter") {
+          searchInput.value = "";
+          profileFilter.value = "ALL";
+          sortSelect.value = "default";
+          currentPage = 1;
+          renderCatalog();
+          return;
+        }
+
+        const btn = e.target.closest(".btn-add-cart");
+        if (!btn) return;
+        const sku = btn.getAttribute("data-sku");
+        const item = store.products.find(function (p) {
+          return p.sku === sku;
+        });
+        if (!item) return;
+
+        store.addToCart(sku, 1);
+        store.showToast(item.name + " (" + item.sku + ") ditambahkan ke keranjang");
+        renderCatalog();
+      });
+
+      function resetAndRender() {
+        currentPage = 1;
+        renderCatalog();
+      }
+
+      searchInput.addEventListener("input", resetAndRender);
+      profileFilter.addEventListener("change", resetAndRender);
+      sortSelect.addEventListener("change", resetAndRender);
+
+      store.onRealtimeUpdate(function () {
+        renderCatalog();
+      });
+
+      renderCatalog();
+
+      // ===== Sorotan Diskon (carousel infinite, SELALU berjalan otomatis ke kanan) =====
+      const spotlight = document.getElementById("spotlight");
+      const spotTrack = document.getElementById("spotlight-track");
+      const spotPrev = document.getElementById("spot-prev");
+      const spotNext = document.getElementById("spot-next");
+
+      const SPOT_SPEED = 40; // kecepatan jalan otomatis (px per detik), naikkan untuk lebih cepat
+      const SPOT_GAP = 16;
+
+      const discounted = store.products.filter(function (p) {
+        return p.discountPercent > 0;
+      });
+
+      let setWidth = 0;
+      let pos = 0;
+      let expected = 0;
+      let glide = 0;
+      let lastTs = 0;
+      let lastWidth = 0;
+
+      function spotCardHtml(item, interactive) {
+        return (
+          '<article class="spot-card">' +
+          '  <span class="discount-badge">-' + item.discountPercent + "%</span>" +
+          '  <img src="' + store.escapeHtml(item.img) + '" alt="' + store.escapeHtml(item.name) + '" draggable="false" />' +
+          '  <div class="spot-body">' +
+          '    <span class="spot-profile">' + store.escapeHtml(item.profile) + "</span>" +
+          '    <h3 class="spot-name">' + store.escapeHtml(item.name) + "</h3>" +
+          '    <div class="spot-prices">' +
+          '      <span class="spot-price">' + store.escapeHtml(item.price) + "</span>" +
+          '      <s class="spot-old">' + store.escapeHtml(item.originalPrice) + "</s>" +
+          "    </div>" +
+          '    <button type="button" class="btn btn-primary btn-block btn-add-cart" data-sku="' + store.escapeHtml(item.sku) + '"' +
+          (interactive ? "" : ' tabindex="-1"') + ">+ Tambah ke Keranjang</button>" +
+          "  </div>" +
+          "</article>"
+        );
+      }
+
+      function spotSetHtml(interactive) {
+        return (
+          '<div class="spotlight-set"' + (interactive ? "" : ' aria-hidden="true"') + ">" +
+          discounted.map(function (item) {
+            return spotCardHtml(item, interactive);
+          }).join("") +
+          "</div>"
+        );
+      }
+
+      // Posisi dijaga di rentang [setWidth, 2*setWidth) supaya bisa jalan/geser tanpa ujung
+      function wrap(p) {
+        if (setWidth <= 0) return p;
+        while (p >= setWidth * 2) p -= setWidth;
+        while (p < setWidth) p += setWidth;
+        return p;
+      }
+
+      function buildSpotlight() {
+        if (!discounted.length) {
+          spotlight.hidden = true;
+          return;
+        }
+        const frac = setWidth > 0 ? (((pos % setWidth) + setWidth) % setWidth) / setWidth : 0;
+
+        spotlight.hidden = false;
+        spotTrack.innerHTML = spotSetHtml(true);
+        const oneSet = spotTrack.firstElementChild.offsetWidth;
+        if (!oneSet) return;
+
+        const copies = Math.ceil(spotTrack.clientWidth / oneSet) + 2;
+        let html = spotSetHtml(true);
+        for (let i = 1; i < copies; i++) html += spotSetHtml(false);
+        spotTrack.innerHTML = html;
+
+        setWidth = spotTrack.firstElementChild.offsetWidth;
+        lastWidth = spotTrack.clientWidth;
+        pos = setWidth + frac * setWidth;
+        spotTrack.scrollLeft = pos;
+        expected = spotTrack.scrollLeft;
+      }
+
+      function cardStep() {
+        const card = spotTrack.querySelector(".spot-card");
+        return (card ? card.offsetWidth : 240) + SPOT_GAP;
+      }
+
+      // Setiap frame: selalu maju ke kanan. Geseran manual user (swipe/drag/tombol) hanya ditambahkan,
+      // tidak pernah menghentikan gerakan otomatis.
+      function spotTick(ts) {
+        requestAnimationFrame(spotTick);
+        const dt = Math.min(ts - lastTs, 50) / 1000;
+        lastTs = ts;
+        if (!setWidth) return;
+
+        const manual = spotTrack.scrollLeft - expected; // geseran user sejak frame sebelumnya
+        let step = SPOT_SPEED * dt;
+
+        if (glide !== 0) {
+          let g = glide * Math.min(1, dt * 8);
+          if (Math.abs(glide) < 1) g = glide;
+          glide -= g;
+          step += g;
+        }
+
+        pos = wrap(pos + manual + step);
+        spotTrack.scrollLeft = pos;
+        expected = spotTrack.scrollLeft;
+      }
+
+      function spotMove(dir) {
+        glide += dir * cardStep();
+      }
+
+      spotPrev.addEventListener("click", function () { spotMove(-1); });
+      spotNext.addEventListener("click", function () { spotMove(1); });
+      spotTrack.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight") { e.preventDefault(); spotMove(1); }
+        else if (e.key === "ArrowLeft") { e.preventDefault(); spotMove(-1); }
+      });
+
+      // Drag dengan mouse (hanya menambah geseran, auto-jalan tetap berlangsung)
+      let dragPointer = null;
+      let dragStartX = 0;
+      let dragLastX = 0;
+      let dragMoved = false;
+      let suppressClick = false;
+
+      spotTrack.addEventListener("pointerdown", function (e) {
+        if (e.pointerType !== "mouse" || e.button !== 0) return;
+        dragPointer = e.pointerId;
+        dragStartX = dragLastX = e.clientX;
+        dragMoved = false;
+      });
+      spotTrack.addEventListener("pointermove", function (e) {
+        if (dragPointer !== e.pointerId) return;
+        if (!dragMoved && Math.abs(e.clientX - dragStartX) > 5) {
+          dragMoved = true;
+          spotTrack.classList.add("dragging");
+          try { spotTrack.setPointerCapture(e.pointerId); } catch (_) {}
+        }
+        if (dragMoved) spotTrack.scrollLeft -= e.clientX - dragLastX;
+        dragLastX = e.clientX;
+      });
+      function endDrag(e) {
+        if (dragPointer !== e.pointerId) return;
+        dragPointer = null;
+        if (dragMoved) {
+          suppressClick = true;
+          setTimeout(function () { suppressClick = false; }, 0);
+        }
+        dragMoved = false;
+        spotTrack.classList.remove("dragging");
+      }
+      spotTrack.addEventListener("pointerup", endDrag);
+      spotTrack.addEventListener("pointercancel", endDrag);
+
+      // Cegah klik tidak sengaja setelah drag
+      spotTrack.addEventListener("click", function (e) {
+        if (suppressClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          suppressClick = false;
+        }
+      }, true);
+
+      // Tambah ke keranjang dari carousel
+      spotTrack.addEventListener("click", function (e) {
+        const btn = e.target.closest(".btn-add-cart");
+        if (!btn) return;
+        const sku = btn.getAttribute("data-sku");
+        const item = store.products.find(function (p) {
+          return p.sku === sku;
+        });
+        if (!item) return;
+        store.addToCart(sku, 1);
+        store.showToast(item.name + " (" + item.sku + ") ditambahkan ke keranjang");
+        renderCatalog();
+      });
+
+      let resizeTimer = null;
+      window.addEventListener("resize", function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          if (spotTrack.clientWidth !== lastWidth) buildSpotlight();
+        }, 200);
+      });
+
+      buildSpotlight();
+      requestAnimationFrame(spotTick);
+    })();
+  </script>
+</body>
+</html>
