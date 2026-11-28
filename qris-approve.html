@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <title>QRIS Approve Simulator — Toko Custom Keycaps</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <div class="head-brand">
+        <div class="head-badge">QRIS</div>
+        <div>
+          <h1>QRIS Payment Simulator</h1>
+          <p>Approve atau tolak transaksi QRIS Toko Custom Keycaps secara realtime</p>
+        </div>
+      </div>
+      <span class="live-pill"><span class="dot"></span> LIVE SYNC</span>
+    </header>
+
+    <div id="sim-root"></div>
+    <div id="sim-log" class="log" aria-live="polite"></div>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="qris-approve.js"></script>
+</body>
+</html>
